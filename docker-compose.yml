@@ -1,0 +1,9 @@
+version: '3'
+
+services:
+  job-scraper:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./jobs.csv:/app/jobs.csv

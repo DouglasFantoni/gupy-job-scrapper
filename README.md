@@ -44,6 +44,7 @@ Após a execução, você encontrará os resultados no arquivo `jobs.csv` na rai
 
 Links que podem ser úteis:
 API: https://portal.api.gupy.io/api/job?name=Front%20end&offset=0&limit=10000
+
 Docs: https://developers.gupy.io/reference/authentication
 
 ## Contribuições

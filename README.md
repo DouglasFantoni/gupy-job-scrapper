@@ -33,7 +33,7 @@ A variável `NEXT_PUBLIC_API_URL` já está configurada no `docker-compose.yml` 
 
 #### Banco de Dados
 
-As migrações são executadas automaticamente no startup do backend. O banco de dados SQLite é persistido no volume `db_data`.
+As migrações são executadas automaticamente no startup do backend. O banco de dados SQLite é persistido através do volume montado `./apps/api:/app` no Docker Compose (arquivo `db.sqlite3` será criado em `apps/api/` no host).
 
 ## Pré-requisitos
 

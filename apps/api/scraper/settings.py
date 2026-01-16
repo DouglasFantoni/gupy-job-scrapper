@@ -63,7 +63,7 @@ WSGI_APPLICATION = 'scraper.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
-# Database path - usar /app/db_data/db.sqlite3 no Docker ou db.sqlite3 localmente
+# Database path - usar /app/db.sqlite3 no Docker ou db.sqlite3 localmente
 DB_PATH = os.getenv('DB_PATH', str(BASE_DIR / 'db.sqlite3'))
 
 DATABASES = {

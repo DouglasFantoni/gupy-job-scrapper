@@ -1,3 +1,93 @@
-.vscode
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Django
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+/staticfiles/
+
+# Environment
 .env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Frontend
+apps/frontend/node_modules/
+apps/frontend/.next/
+apps/frontend/out/
+apps/frontend/build/
+apps/frontend/.env*.local
+frontend/node_modules/
+frontend/.next/
+frontend/out/
+frontend/build/
+frontend/.env*.local
+
+# Jobs CSV
 jobs.csv
+
+# Test coverage
+htmlcov/
+.coverage
+.coverage.*
+coverage/
+*.cover
+.pytest_cache/
+
+# Frontend test coverage
+apps/frontend/coverage/
+apps/frontend/.nyc_output/
+frontend/coverage/
+frontend/.nyc_output/
+
+# pnpm
+node_modules/
+pnpm-lock.yaml
+.pnpm-store/
+
+.cursor/rules/mr.mdc
+
+.cursor/rules/project.mdc
+
+.cursor/rules/review.mdc
+
+apps/api/db.sqlite3-shm
+
+apps/api/db.sqlite3-wal

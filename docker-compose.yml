@@ -1,9 +1,32 @@
-version: '3'
-
 services:
-  job-scraper:
+  backend:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.backend
+    container_name: gupy-scraper-backend
     volumes:
-      - ./jobs.csv:/app/jobs.csv
+      - ./apps/api:/app
+      - ./packages/scraper:/app/packages/scraper
+      - ./.env:/app/.env
+    ports:
+      - "8000:8000"
+    environment:
+      - PYTHONUNBUFFERED=1
+      - DJANGO_SETTINGS_MODULE=scraper.settings
+      - DB_PATH=/app/db.sqlite3
+
+  frontend:
+    build:
+      context: .
+      dockerfile: apps/frontend/Dockerfile
+    container_name: gupy-scraper-frontend
+    volumes:
+      - ./apps/frontend:/app
+      - ./apps/frontend/node_modules:/app/node_modules
+      - /app/.next
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - NEXT_PUBLIC_API_URL=http://localhost:8000
+

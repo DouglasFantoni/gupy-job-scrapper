@@ -1,0 +1,96 @@
+---
+globs: *.tsx,*.ts
+description: Regras para typescript
+alwaysApply: false
+---
+
+# 🔷 TypeScript - Princípios e Boas Práticas
+
+## 📋 Princípios Básicos
+
+### Declaração de Tipos
+
+- **Use English** para todo código e documentação
+- **Sempre declare o tipo** de cada variável e função (parâmetros e valor de retorno)
+- **Evite usar `any`** - procure por definições de tipos no codebase ao invés de usar any
+- **Evite `any` ou `unknown`** a menos que absolutamente necessário
+- **Evite type assertions** com `as` ou `!`
+- **Crie tipos necessários** quando não existirem
+- **Use TypeScript** para todo código
+- **Escreva código TypeScript técnico**
+
+### Configuração
+
+- **Use strict mode** no TypeScript para melhor type safety
+- **Habilite strict mode**
+- **Use modo strict** no TypeScript
+
+### Documentação
+
+- **Use JSDoc** para documentar classes públicas e métodos
+- Apenas quando for alguma lógica complexa ou a classe/método seja um helper
+
+## 🏗️ Uso de Tipos
+
+### Interfaces vs Types
+
+- **Prefira `interface` sobre `type`**
+- **Use interface sobre type** para definir estruturas de objeto, especialmente ao estender
+- **Prefira interfaces sobre types** para estruturas de objeto
+
+### Tipos Avançados
+
+- **Use utility types** do TypeScript (`Partial`, `Pick`, `Omit`) para código mais limpo e reutilizável
+- **Use mapped types** para criar variações de tipos existentes dinamicamente
+- **Aplique generics** para funções, actions e slices onde flexibilidade de tipo é necessária
+- **Use type guards** para lidar com valores potencialmente undefined ou null com segurança
+
+### Validação e Tratamento de Dados
+
+- **Use type guards** para tratar valores undefined/null
+- **Evite validações de dados** em funções e use classes com validação interna
+- **Prefira imutabilidade** para dados
+- **Use `readonly`** para dados que não mudam
+- **Use `as const`** para literais que não mudam
+- **Não abuse de tipos primitivos** e encapsule dados em tipos compostos
+
+## ⚙️ Funções
+
+### Declaração e Estrutura
+
+- **Use a palavra-chave "function"** para funções puras
+- **Escreva funções curtas** com um único propósito (de preferência com menos de 20 instruções)
+- **Nomeie funções** com um verbo e algo mais
+- **Se retorna boolean**: use `isX` ou `hasX`, `canX`, etc.
+- **Se não retorna nada**: use `executeX` ou `saveX`, etc.
+- **Use consts** ao invés de functions, por exemplo: `const toggle = () =>`. Também, defina um tipo se possível
+
+### Organização e Estrutura
+
+- **Evite aninhar blocos** por:
+  - Verificações antecipadas e returns
+  - Extração para funções utilitárias
+- **Use funções de ordem superior** (`map`, `filter`, `reduce`, etc.) para evitar aninhamento de funções
+- **Use arrow functions** para funções simples (menos de 3 instruções)
+- **Use funções nomeadas** para funções não-simples
+- **Use valores padrão de parâmetros** ao invés de verificar null ou undefined
+- **Use early returns** sempre que possível para tornar o código mais legível
+- **Não deixe linhas em branco** dentro de uma função
+
+### Padrões RO-RO (Receive Object, Return Object)
+
+- **Reduza parâmetros de função** usando RO-RO
+- **Use um objeto** para passar múltiplos parâmetros
+- **Use um objeto** para retornar resultados
+- **Declare tipos necessários** para argumentos de entrada e saída
+- **Use um único nível de abstração**
+
+### Nomes Descritivos
+
+- **Use nomes de variáveis e funções/const descritivos**
+- **Use nomes de variáveis descritivos** com verbos auxiliares (ex: `isLoading`, `hasError`)
+- **Use nomes de variáveis descritivos** com verbos auxiliares (ex: `isLoaded`, `hasError`)
+
+Use nomes de variáveis e funções/const descritivos
+Use nomes de variáveis descritivos com verbos auxiliares (ex: isLoading, hasError)
+Use nomes de variáveis descritivos com verbos auxiliares (ex: isLoaded, hasError)

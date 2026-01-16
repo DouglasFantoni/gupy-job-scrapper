@@ -1,0 +1,55 @@
+---
+globs: *.tsx
+description: Regras para React
+alwaysApply: false
+---
+
+# ⚛️ React - Componentes e Hooks
+
+## 📋 Princípios Gerais
+
+### Padrões de Desenvolvimento
+
+- **Use TSX declarativo**, mantendo TSX mínimo e legível
+- **Prefira iteração e modularização** sobre duplicação de código
+- **Favoreça exportações nomeadas** para componentes e utilitários
+- **Use functional e declarative programming patterns**; evite classes
+- **Prefira padrões de programação funcional e declarativa** sobre imperativo
+
+## 🏗️ Arquitetura de Componentes
+
+### Definição e Estrutura
+
+- **Use componentes funcionais** com interfaces TypeScript
+- **Defina componentes** usando palavra-chave `function`
+- **Extraia lógica reutilizável** em custom hooks
+- **Escreva componentes pequenos** com um único propósito
+- **Aplique padrões de composição** para criar componentes modulares e reutilizáveis
+
+### Implementação de Composição
+
+- Implemente composição adequada de componentes
+
+## ⚡ Memoização e Otimização
+
+### Hooks de Memoização
+
+- **Use `React.memo()`** estrategicamente para performance
+- **Use `useCallback`** para memoizar funções callback
+- **Implemente `useMemo`** para computações caras
+- **Evite definições de funções inline** no JSX
+- **Use keys adequadas em listas** (evite usar index como key)
+
+### Estratégias de Performance
+
+- **Minimize `'use client'`, `useEffect`, e `setState`**; favoreça React Server Components (RSC)
+- **Minimize o uso de `useState` e `useEffect`**; prefira context e reducers para gerenciamento de estado
+- **Implemente code splitting e lazy loading** para componentes não-críticos com Suspense do React e dynamic imports
+- **Implemente code splitting** usando dynamic imports
+- **Use dynamic loading** para componentes não-críticos
+- **Envolver client components** em Suspense com fallback
+- **Evite re-renders desnecessários** memoizando componentes e usando hooks `useMemo` e `useCallback` apropriadamente
+
+Use dynamic loading para componentes não-críticos
+Envolver client components em Suspense com fallback
+Evite re-renders desnecessários memoizando componentes e usando hooks useMemo e useCallback apropriadamente

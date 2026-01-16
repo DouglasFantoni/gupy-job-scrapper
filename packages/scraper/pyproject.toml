@@ -1,0 +1,12 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "gupy-scraper"
+version = "0.1.0"
+description = "Package para scraping de vagas da API Gupy"
+dependencies = ["requests>=2.31.0"]
+
+[project.optional-dependencies]
+dev = []

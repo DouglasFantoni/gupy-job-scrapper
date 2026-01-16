@@ -1,0 +1,27 @@
+FROM python:3.11-slim
+
+WORKDIR /app
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    gcc \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY apps/api/requirements.txt /app/requirements.txt
+RUN pip install --upgrade pip
+
+COPY packages/scraper /app/packages/scraper
+RUN pip install --no-cache-dir -e /app/packages/scraper
+
+RUN pip install --no-cache-dir -r /app/requirements.txt
+
+COPY apps/api /app
+COPY scripts/entrypoint-backend.sh /entrypoint.sh
+
+RUN chmod -R 755 /app && chmod +x /entrypoint.sh
+
+EXPOSE 8000
+
+ENTRYPOINT ["/entrypoint.sh"]
+CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+

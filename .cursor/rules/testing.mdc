@@ -1,0 +1,46 @@
+---
+globs: *.spec.ts,*.spec.tsx,*.test.ts,*.test.tsx
+description: Regras para testes
+alwaysApply: false
+---
+
+# 🧪 Testing - Convenções e Boas Práticas
+
+## 📋 Convenções de Teste
+
+### Estrutura de Testes
+
+- **Siga convenção Arrange-Act-Assert** para testes
+- **Nomeie variáveis de teste** claramente
+- **Siga convenção**: `inputX`, `mockX`, `actualX`, `expectedX`, etc.
+- **Escreva testes de aceitação** para cada módulo
+- **Siga convenção Given-When-Then**
+
+### Padrões de Teste
+
+- **Siga padrões como Arrange-Act-Assert** para garantir clareza e consistência em testes
+- **Faça mock de dependências externas** e chamadas de API para isolar testes unitários
+
+## 🛠️ Ferramentas de Teste
+
+### Framework Principal
+
+- **Use framework Jest padrão** para testes
+- **Use Jest e React Testing Library** caso o projeto tenha, para teste confiável e eficiente de componentes React
+
+### Cobertura de Testes
+
+- **Escreva testes para cada controller** e service
+- **Escreva testes end to end** para cada módulo de api
+
+
+Adicione método admin/test para cada controller como smoke test
+Siga padrões como Arrange-Act-Assert para garantir clareza e consistência em testes
+Faça mock de dependências externas e chamadas de API para isolar testes unitários
+
+
+Quando eu enviar testes que falharem, corrija todos os testes e códigos com erros e só depois execute o comando para rodar os testes novamente.
+
+
+
+

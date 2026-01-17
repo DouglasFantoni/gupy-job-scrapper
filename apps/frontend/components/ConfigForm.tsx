@@ -1,17 +1,22 @@
 'use client';
 
-import { JOB_TYPE_OPTIONS, WORKPLACE_TYPE_OPTIONS } from '@/lib/constants';
+import { JOB_TYPE_OPTIONS, STATE_OPTIONS, WORKPLACE_TYPE_OPTIONS } from '@/lib/constants';
 import { Config } from '@/lib/types';
 import { arraysEqual, joinArray, normalizeKeywords, parseKeywords, toggleArrayItem } from '@/lib/utils';
-import { useEffect, useMemo, useState, type ChangeEvent, type FormEvent } from 'react';
+import { useEffect, useMemo, useState, type ChangeEvent } from 'react';
 
 interface ConfigFormProps {
   initialConfig?: Config | null;
-  onSave: (config: Omit<Config, 'id' | 'created_at' | 'updated_at'>) => Promise<void>;
+  onSaveNew?: (config: Omit<Config, 'id' | 'created_at' | 'updated_at'>) => Promise<void>;
+  onUpdate?: (config: Omit<Config, 'id' | 'created_at' | 'updated_at'>) => void;
+  onSearch?: () => void;
+  onClear?: () => void;
+  selectedConfigId?: number | null;
   isSaving: boolean;
 }
 
-export default function ConfigForm({ initialConfig, onSave, isSaving }: ConfigFormProps) {
+export default function ConfigForm({ initialConfig, onSaveNew, onUpdate, onSearch, onClear, selectedConfigId, isSaving }: ConfigFormProps) {
+  const [searchName, setSearchName] = useState('');
   const [titleKeywords, setTitleKeywords] = useState('');
   const [dateStart, setDateStart] = useState('');
   const [descriptionKeywords, setDescriptionKeywords] = useState('');
@@ -25,11 +30,14 @@ export default function ConfigForm({ initialConfig, onSave, isSaving }: ConfigFo
   // Verificar se o formulário foi modificado em relação à configuração inicial
   const hasChanges = useMemo(() => {
     if (!initialConfig) {
-      // Se não há configuração inicial, considerar como modificado se houver título (obrigatório)
-      return !!titleKeywords.trim();
+      // Se não há configuração inicial, considerar como modificado se houver nome ou título (obrigatórios)
+      return !!searchName.trim() || !!titleKeywords.trim();
     }
 
     // Normalizar valores para comparação
+    const currentName = searchName.trim();
+    const initialName = (initialConfig.name || '').trim();
+    
     const currentTitleKeywords = titleKeywords.trim();
     const initialTitleKeywords = (initialConfig.title_keywords || '').trim();
     
@@ -47,6 +55,7 @@ export default function ConfigForm({ initialConfig, onSave, isSaving }: ConfigFo
     const initialJobTypes = initialConfig.job_types || [];
 
     return (
+      currentName !== initialName ||
       currentTitleKeywords !== initialTitleKeywords ||
       dateStart !== (initialConfig.date_start || '') ||
       currentDescriptionKeywords !== initialDescriptionKeywords ||
@@ -56,10 +65,11 @@ export default function ConfigForm({ initialConfig, onSave, isSaving }: ConfigFo
       currentCountry !== initialCountry ||
       !arraysEqual(currentJobTypes, initialJobTypes)
     );
-  }, [titleKeywords, dateStart, descriptionKeywords, workplaceTypes, excludeKeywords, state, country, jobTypes, initialConfig]);
+  }, [searchName, titleKeywords, dateStart, descriptionKeywords, workplaceTypes, excludeKeywords, state, country, jobTypes, initialConfig]);
 
   // Função para limpar o formulário
   const clearForm = () => {
+    setSearchName('');
     setTitleKeywords('');
     setDateStart('');
     setDescriptionKeywords('');
@@ -68,11 +78,16 @@ export default function ConfigForm({ initialConfig, onSave, isSaving }: ConfigFo
     setState('');
     setCountry('');
     setJobTypes([]);
+    // Resetar a configuração selecionada no componente pai
+    if (onClear) {
+      onClear();
+    }
   };
 
   useEffect(() => {
     // Sempre preencher quando initialConfig mudar ou quando for carregado
     if (initialConfig) {
+      setSearchName(initialConfig.name || '');
       setTitleKeywords(initialConfig.title_keywords || '');
       setDateStart(initialConfig.date_start || '');
       setDescriptionKeywords(initialConfig.description_required_keywords || '');
@@ -94,20 +109,14 @@ export default function ConfigForm({ initialConfig, onSave, isSaving }: ConfigFo
     setJobTypes((prev: string[]) => toggleArrayItem(prev, type));
   };
 
-  const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault();
-    
-    // Validar que o título é obrigatório
-    if (!titleKeywords.trim()) {
-      return;
-    }
-    
-    // Não permitir salvar se não houver mudanças
-    if (!hasChanges) {
+  const handleSaveNew = async () => {
+    // Validar que nome e título são obrigatórios
+    if (!searchName.trim() || !titleKeywords.trim()) {
       return;
     }
     
     const config: Omit<Config, 'id' | 'created_at' | 'updated_at'> = {
+      name: searchName.trim(),
       title_keywords: titleKeywords.trim(),
       date_start: dateStart && dateStart.trim() ? dateStart : null,
       description_required_keywords: descriptionKeywords.trim() || '',
@@ -118,11 +127,64 @@ export default function ConfigForm({ initialConfig, onSave, isSaving }: ConfigFo
       job_types: jobTypes,
     };
 
-    await onSave(config);
+    if (onSaveNew) {
+      await onSaveNew(config);
+    }
+  };
+
+  const handleUpdate = () => {
+    // Validar que nome e título são obrigatórios
+    if (!searchName.trim() || !titleKeywords.trim() || !selectedConfigId) {
+      return;
+    }
+    
+    const config: Omit<Config, 'id' | 'created_at' | 'updated_at'> = {
+      name: searchName.trim(),
+      title_keywords: titleKeywords.trim(),
+      date_start: dateStart && dateStart.trim() ? dateStart : null,
+      description_required_keywords: descriptionKeywords.trim() || '',
+      workplace_types: workplaceTypes,
+      exclude_keywords: parseKeywords(excludeKeywords),
+      state: state.trim() || '',
+      country: country.trim() || '',
+      job_types: jobTypes,
+    };
+
+    if (onUpdate) {
+      onUpdate(config);
+    }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-2 sm:space-y-3">
+    <form className="space-y-2 sm:space-y-3">
+      <div className="flex justify-end">
+        <button
+          type="button"
+          onClick={clearForm}
+          disabled={isSaving}
+          className="flex items-center gap-1 bg-gray-200 text-gray-700 py-1 px-2 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed text-xs"
+          title="Limpar formulário"
+        >
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+          </svg>
+          <span>Limpar</span>
+        </button>
+      </div>
+
+      <div>
+        <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">
+          Nome da Busca
+        </label>
+        <input
+          type="text"
+          value={searchName}
+          onChange={(e: ChangeEvent<HTMLInputElement>) => setSearchName(e.target.value)}
+          required
+          className="w-full px-2 sm:px-3 py-1.5 sm:py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+          placeholder="Ex: Busca Frontend React"
+        />
+      </div>
       
       <div>
         <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">
@@ -199,15 +261,19 @@ export default function ConfigForm({ initialConfig, onSave, isSaving }: ConfigFo
 
       <div>
         <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">
-          Estado (opcional, nome completo)
+          Estado (opcional)
         </label>
-        <input
-          type="text"
+        <select
           value={state}
-          onChange={(e: ChangeEvent<HTMLInputElement>) => setState(e.target.value)}
-          className="w-full px-2 sm:px-3 py-1.5 sm:py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
-          placeholder="Ex: São Paulo, Rio de Janeiro"
-        />
+          onChange={(e: ChangeEvent<HTMLSelectElement>) => setState(e.target.value)}
+          className="w-full px-2 sm:px-3 py-1.5 sm:py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm bg-white"
+        >
+          {STATE_OPTIONS.map(({ value, label }) => (
+            <option key={value} value={value}>
+              {label}
+            </option>
+          ))}
+        </select>
       </div>
 
       <div>
@@ -244,21 +310,22 @@ export default function ConfigForm({ initialConfig, onSave, isSaving }: ConfigFo
         </div>
       </div>
 
-      <div className="flex gap-2">
+      <div className="space-y-2">
         <button
           type="button"
-          onClick={clearForm}
-          disabled={isSaving}
-          className="flex-1 bg-gray-200 text-gray-700 py-1.5 sm:py-2 px-2 sm:px-4 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed font-medium text-sm sm:text-base"
+          onClick={handleUpdate}
+          disabled={isSaving || !selectedConfigId || !searchName.trim() || !titleKeywords.trim()}
+          className="w-full bg-green-600 text-white py-1.5 sm:py-2 px-2 sm:px-4 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed font-medium text-sm sm:text-base"
         >
-          Limpar Formulário
+          {isSaving ? 'Atualizando...' : 'Atualizar Configuração de Busca'}
         </button>
         <button
-          type="submit"
-          disabled={isSaving || !hasChanges || !titleKeywords.trim()}
-          className="flex-1 bg-blue-600 text-white py-1.5 sm:py-2 px-2 sm:px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed font-medium text-sm sm:text-base"
+          type="button"
+          onClick={handleSaveNew}
+          disabled={isSaving || !searchName.trim() || !titleKeywords.trim()}
+          className="w-full bg-blue-600 text-white py-1.5 sm:py-2 px-2 sm:px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed font-medium text-sm sm:text-base"
         >
-          {isSaving ? 'Salvando...' : 'Salvar Configuração'}
+          {isSaving ? 'Salvando...' : 'Salvar Novo'}
         </button>
       </div>
     </form>

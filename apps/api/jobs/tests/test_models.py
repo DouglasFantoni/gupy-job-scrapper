@@ -13,23 +13,27 @@ class ConfigModelTestCase(TestCase):
     def test_create_config(self):
         """Testa criação de configuração"""
         config = Config.objects.create(
+            name='Busca Python',
             title_keywords='python, django',
             description_required_keywords='react',
             workplace_types=['remote'],
             exclude_keywords=['inglês']
         )
         self.assertIsNotNone(config.id)
+        self.assertEqual(config.name, 'Busca Python')
         self.assertEqual(config.title_keywords, 'python, django')
     
     def test_config_ordering(self):
         """Testa ordenação de configurações"""
         config1 = Config.objects.create(
+            name='Busca Python',
             title_keywords='python',
             description_required_keywords='django',
             workplace_types=[],
             exclude_keywords=[]
         )
         config2 = Config.objects.create(
+            name='Busca React',
             title_keywords='react',
             description_required_keywords='javascript',
             workplace_types=[],
@@ -46,6 +50,7 @@ class SearchModelTestCase(TestCase):
     def setUp(self):
         """Setup para testes"""
         self.config = Config.objects.create(
+            name='Busca Python',
             title_keywords='python',
             description_required_keywords='django',
             workplace_types=['remote'],
@@ -145,6 +150,7 @@ class VacancyModelTestCase(TestCase):
     def test_vacancy_search_relationship(self):
         """Testa relacionamento com Search"""
         config = Config.objects.create(
+            name='Busca Python',
             title_keywords='python',
             description_required_keywords='django',
             workplace_types=[],

@@ -46,11 +46,11 @@ export default function VacancyTable({
           <th className="px-2 sm:px-3 lg:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden sm:table-cell">
             Modelo de Trabalho
           </th>
-          <th className="px-2 sm:px-3 lg:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden lg:table-cell">
-            Data de Publicação
+          <th className="px-2 sm:px-3 lg:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden sm:table-cell">
+            Tipo de Vaga
           </th>
           <th className="px-2 sm:px-3 lg:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden lg:table-cell">
-            Data de Criação
+            Data de Publicação
           </th>
           <th className="px-2 sm:px-3 lg:px-6 py-2 sm:py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
             Ações
@@ -96,14 +96,14 @@ export default function VacancyTable({
                   {vacancy.workplace_types_display || 'N/A'}
                 </div>
               </td>
-              <td className="px-2 sm:px-3 lg:px-6 py-2 sm:py-3 lg:py-4 whitespace-nowrap hidden lg:table-cell">
+              <td className="px-2 sm:px-3 lg:px-6 py-2 sm:py-3 lg:py-4 whitespace-nowrap hidden sm:table-cell">
                 <div className="text-xs sm:text-sm text-gray-500">
-                  {formatDate(vacancy.published_date, true)}
+                  {vacancy.type || 'N/A'}
                 </div>
               </td>
               <td className="px-2 sm:px-3 lg:px-6 py-2 sm:py-3 lg:py-4 whitespace-nowrap hidden lg:table-cell">
                 <div className="text-xs sm:text-sm text-gray-500">
-                  {formatDate(vacancy.created_at, true)}
+                  {formatDate(vacancy.published_date)}
                 </div>
               </td>
               <td className="px-2 sm:px-3 lg:px-6 py-2 sm:py-3 lg:py-4 whitespace-nowrap text-xs sm:text-sm font-medium">

@@ -14,6 +14,7 @@ class ConfigSerializerTestCase(TestCase):
     def setUp(self):
         """Setup para testes"""
         self.valid_data = {
+            'name': 'Busca Python',
             'title_keywords': 'python, django',
             'description_required_keywords': 'react, javascript',
             'workplace_types': ['remote', 'hybrid'],
@@ -27,6 +28,14 @@ class ConfigSerializerTestCase(TestCase):
         """Testa serialização de dados válidos"""
         serializer = ConfigSerializer(data=self.valid_data)
         self.assertTrue(serializer.is_valid())
+    
+    def test_serializer_name_required(self):
+        """Testa que name é obrigatório"""
+        data = self.valid_data.copy()
+        data['name'] = ''
+        serializer = ConfigSerializer(data=data)
+        self.assertFalse(serializer.is_valid())
+        self.assertIn('name', serializer.errors)
     
     def test_serializer_title_keywords_required(self):
         """Testa que title_keywords é obrigatório"""
@@ -76,6 +85,7 @@ class SearchSerializerTestCase(TestCase):
     def setUp(self):
         """Setup para testes"""
         self.config = Config.objects.create(
+            name='Busca Python',
             title_keywords='python',
             description_required_keywords='django',
             workplace_types=['remote'],
@@ -89,6 +99,7 @@ class SearchSerializerTestCase(TestCase):
         search = serializer.save()
         
         self.assertIsNotNone(search.config_snapshot)
+        self.assertEqual(search.config_snapshot['name'], 'Busca Python')
         self.assertEqual(search.config_snapshot['title_keywords'], 'python')
         self.assertEqual(search.status, 'pending')
 

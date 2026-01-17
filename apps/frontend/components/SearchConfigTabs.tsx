@@ -1,21 +1,19 @@
 'use client';
 
 import { useConfig } from '@/hooks/useConfig';
-import { Config } from '@/lib/types';
 import { getLatestSearchByConfig } from '@/lib/api';
+import { Config } from '@/lib/types';
 import { useState } from 'react';
 import ConfigForm from './ConfigForm';
-import SavedSearchesList from './SavedSearchesList';
-import SearchButton from './SearchButton';
 import ConfirmModal from './ConfirmModal';
+import SavedSearchesList from './SavedSearchesList';
 
 interface SearchConfigTabsProps {
-  onSearch: () => void;
+  onSearch: (configId?: number) => void;
   isSearchLoading: boolean;
   isSearchDisabled: boolean;
   onConfigSelect: (config: Config | null, searchId?: number) => void;
   selectedConfig: Config | null;
-  currentSearchId?: number | null;
   onConfigSaved?: () => void;
 }
 
@@ -25,12 +23,13 @@ export default function SearchConfigTabs({
   isSearchDisabled,
   onConfigSelect,
   selectedConfig,
-  currentSearchId,
   onConfigSaved,
 }: SearchConfigTabsProps) {
-  const { isSaving, save: saveConfig, refresh: refreshConfig } = useConfig();
+  const { isSaving, save: saveConfig, update: updateConfig } = useConfig();
   const [activeTab, setActiveTab] = useState<'saved' | 'search'>('search');
-  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [showUpdateConfirmModal, setShowUpdateConfirmModal] = useState(false);
+  const [pendingUpdateData, setPendingUpdateData] = useState<Omit<Config, 'id' | 'created_at' | 'updated_at'> | null>(null);
+  const [configsRefreshTrigger, setConfigsRefreshTrigger] = useState(0);
 
   const handleConfigSelect = async (config: Config) => {
     setActiveTab('search');
@@ -48,12 +47,13 @@ export default function SearchConfigTabs({
     }
   };
 
-  const handleSave = async (configData: Omit<Config, 'id' | 'created_at' | 'updated_at'>) => {
+  const handleSaveNew = async (configData: Omit<Config, 'id' | 'created_at' | 'updated_at'>) => {
     try {
       const savedConfig = await saveConfig(configData);
-      await refreshConfig();
-      if (savedConfig) {
+      if (savedConfig && savedConfig.id) {
         onConfigSelect(savedConfig, undefined);
+        setConfigsRefreshTrigger(prev => prev + 1);
+        onSearch(savedConfig.id);
       }
       if (onConfigSaved) {
         onConfigSaved();
@@ -63,16 +63,37 @@ export default function SearchConfigTabs({
     }
   };
 
-  const handleSearchClick = () => {
-    if (currentSearchId) {
-      setShowConfirmModal(true);
-    } else {
-      onSearch();
+  const handleUpdate = (configData: Omit<Config, 'id' | 'created_at' | 'updated_at'>) => {
+    if (!selectedConfig?.id) {
+      return;
     }
+    // Armazenar os dados e mostrar o modal de confirmação
+    setPendingUpdateData(configData);
+    setShowUpdateConfirmModal(true);
   };
 
-  const handleConfirmRefetch = () => {
-    onSearch();
+  const handleConfirmUpdate = async () => {
+    if (!selectedConfig?.id || !pendingUpdateData) {
+      return;
+    }
+    try {
+      const updatedConfig = await updateConfig(selectedConfig.id, pendingUpdateData);
+      if (updatedConfig && updatedConfig.id) {
+        onConfigSelect(updatedConfig, undefined);
+        // Atualizar a lista de configs salvas
+        setConfigsRefreshTrigger(prev => prev + 1);
+        // Chamar onSearch com o configId diretamente para evitar problemas de timing
+        onSearch(updatedConfig.id);
+      }
+      if (onConfigSaved) {
+        onConfigSaved();
+      }
+    } catch (error) {
+      console.error('Erro ao atualizar configuração:', error);
+    } finally {
+      setShowUpdateConfirmModal(false);
+      setPendingUpdateData(null);
+    }
   };
 
 
@@ -108,6 +129,7 @@ export default function SearchConfigTabs({
       <div className="p-2 sm:p-3 lg:p-4 overflow-y-auto flex-1 min-h-0 max-h-full">
         {activeTab === 'saved' && (
           <SavedSearchesList
+            key={configsRefreshTrigger}
             onUseSearch={handleConfigSelect}
             currentConfigId={selectedConfig?.id || undefined}
             onConfigDeleted={() => {
@@ -123,30 +145,27 @@ export default function SearchConfigTabs({
             <ConfigForm
               key={selectedConfig?.id || 'new'}
               initialConfig={selectedConfig}
-              onSave={handleSave}
+              onSaveNew={handleSaveNew}
+              onUpdate={handleUpdate}
+              onSearch={onSearch}
+              onClear={() => onConfigSelect(null)}
+              selectedConfigId={selectedConfig?.id || null}
               isSaving={isSaving}
             />
-            
-            <div className="mt-3">
-              <SearchButton
-                onClick={handleSearchClick}
-                isLoading={isSearchLoading}
-                disabled={isSearchDisabled}
-                configId={selectedConfig?.id}
-                hasActiveSearch={!!currentSearchId}
-              />
-            </div>
           </div>
         )}
       </div>
 
       <ConfirmModal
-        isOpen={showConfirmModal}
-        onClose={() => setShowConfirmModal(false)}
-        onConfirm={handleConfirmRefetch}
-        title="Refazer Busca"
-        message="Ao refazer a busca, os dados da busca anterior serão perdidos. Deseja continuar?"
-        confirmText="Refazer Busca"
+        isOpen={showUpdateConfirmModal}
+        onClose={() => {
+          setShowUpdateConfirmModal(false);
+          setPendingUpdateData(null);
+        }}
+        onConfirm={handleConfirmUpdate}
+        title="Atualizar Configuração de Busca"
+        message="Ao atualizar a configuração e realizar a busca, as vagas podem ser perdidas devido a alterações nos filtros. Deseja continuar?"
+        confirmText="Atualizar e Buscar"
         cancelText="Cancelar"
       />
     </div>

@@ -11,7 +11,6 @@ interface VacancyListProps {
   onView: (vacancyId: number) => void;
   onDelete: (vacancyId: number) => void;
   onOpenNextUnviewed: (vacancy: Vacancy) => void;
-  onOpenSelected: (vacancyIds: number[]) => void;
   onDeleteSelected: (vacancyIds: number[]) => void;
   keywords?: string[];
   isLoading?: boolean;
@@ -22,7 +21,6 @@ export default function VacancyList({
   onView, 
   onDelete, 
   onOpenNextUnviewed,
-  onOpenSelected,
   onDeleteSelected,
   keywords = [],
   isLoading 
@@ -110,14 +108,6 @@ export default function VacancyList({
     }
   }, [allVisibleSelected, filteredVacancies]);
 
-  const handleOpenSelectedVacancies = useCallback(() => {
-    const ids = Array.from(selectedVacancyIds);
-    if (ids.length === 0) {
-      return;
-    }
-    onOpenSelected(ids);
-  }, [selectedVacancyIds, onOpenSelected]);
-
   const handleDeleteSelectedVacancies = useCallback(() => {
     const ids = Array.from(selectedVacancyIds);
     if (ids.length === 0) {
@@ -170,20 +160,12 @@ export default function VacancyList({
               {allVisibleSelected ? 'Desselecionar Tudo' : 'Selecionar Tudo'}
             </button>
             {selectedCount > 0 ? (
-              <>
-                <button
-                  onClick={handleOpenSelectedVacancies}
-                  className="bg-green-600 text-white px-2 sm:px-3 lg:px-4 py-1.5 sm:py-2 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 text-xs sm:text-sm whitespace-nowrap"
-                >
-                  Abrir Vagas Selecionadas ({selectedCount})
-                </button>
-                <button
-                  onClick={handleDeleteSelectedVacancies}
-                  className="bg-red-600 text-white px-2 sm:px-3 lg:px-4 py-1.5 sm:py-2 rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 text-xs sm:text-sm whitespace-nowrap"
-                >
-                  Excluir Selecionadas ({selectedCount})
-                </button>
-              </>
+              <button
+                onClick={handleDeleteSelectedVacancies}
+                className="bg-red-600 text-white px-2 sm:px-3 lg:px-4 py-1.5 sm:py-2 rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 text-xs sm:text-sm whitespace-nowrap"
+              >
+                Excluir Selecionadas ({selectedCount})
+              </button>
             ) : (
               nextUnviewedVacancy && (
                 <button

@@ -34,18 +34,17 @@ export default function Home() {
     setCurrentSearchId(searchId || null);
   };
 
-  const handleSearch = async () => {
-    const configToUse = selectedConfig;
+  const handleSearch = async (configId?: number) => {
+    const configIdToUse = configId || selectedConfig?.id;
     
-    if (!configToUse?.id) {
+    if (!configIdToUse) {
       toast.error('Por favor, salve uma configuração primeiro');
       return;
     }
 
     try {
-      const newSearch = await startSearch(configToUse.id);
+      const newSearch = await startSearch(configIdToUse);
       setCurrentSearchId(newSearch.id);
-      refresh();
     } catch (error) {
       console.error('Erro ao iniciar busca:', error);
       toast.error('Erro ao iniciar busca. Tente novamente.');
@@ -96,58 +95,6 @@ export default function Home() {
     } catch (error) {
       console.error('Erro ao abrir vaga:', error);
       toast.error('Erro ao abrir vaga');
-    }
-  };
-
-  const handleOpenSelected = async (vacancyIds: number[]) => {
-    if (vacancyIds.length === 0) {
-      toast.info('Nenhuma vaga selecionada');
-      return;
-    }
-
-    try {
-      const selectedVacancies = ensureArray(vacancies).filter((v: Vacancy) => 
-        vacancyIds.includes(v.id)
-      );
-
-      if (selectedVacancies.length === 0) {
-        toast.error('Nenhuma vaga encontrada com os IDs selecionados');
-        return;
-      }
-
-      let openedCount = 0;
-      selectedVacancies.forEach((vacancy: Vacancy, index) => {
-        if (vacancy.job_url) {
-          setTimeout(() => {
-            const newWindow = window.open(vacancy.job_url, '_blank', 'noopener,noreferrer');
-            if (newWindow) {
-              openedCount++;
-            }
-            if (index === selectedVacancies.length - 1) {
-              setTimeout(() => {
-                if (openedCount < selectedVacancies.length) {
-                  toast.info(
-                    `Apenas ${openedCount} de ${selectedVacancies.length} vaga(s) foram abertas. ` +
-                    `O navegador pode estar bloqueando pop-ups. Verifique as configurações do navegador.`,
-                    { duration: 6000 }
-                  );
-                }
-              }, 1000);
-            }
-          }, index * 1);
-        }
-      });
-
-      setTimeout(() => {
-        selectedVacancies.forEach((vacancy: Vacancy) => {
-          if (!vacancy.is_viewed) {
-            markViewed(vacancy.id);
-          }
-        });
-      }, 1000);
-    } catch (error) {
-      console.error('Erro ao abrir vagas selecionadas:', error);
-      toast.error('Erro ao abrir vagas selecionadas');
     }
   };
 
@@ -252,7 +199,6 @@ export default function Home() {
                 isSearchDisabled={!selectedConfig?.id}
                 onConfigSelect={handleLoadSearch}
                 selectedConfig={selectedConfig}
-                currentSearchId={currentSearchId}
                 onConfigSaved={handleConfigSaved}
               />
             </div>
@@ -268,7 +214,6 @@ export default function Home() {
                   onView={handleViewVacancy}
                   onDelete={handleDeleteVacancy}
                   onOpenNextUnviewed={handleOpenNextUnviewed}
-                  onOpenSelected={handleOpenSelected}
                   onDeleteSelected={handleDeleteSelected}
                   keywords={keywords}
                   isLoading={vacanciesLoading && !isCompleted}

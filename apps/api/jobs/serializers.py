@@ -15,10 +15,16 @@ class ConfigSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Config
-        fields = ['id', 'title_keywords', 'date_start', 'description_required_keywords', 
+        fields = ['id', 'name', 'title_keywords', 'date_start', 'description_required_keywords', 
                   'workplace_types', 'exclude_keywords', 'state', 'country', 'job_types',
                   'created_at', 'updated_at']
         read_only_fields = ['id', 'created_at', 'updated_at']
+    
+    def validate_name(self, value):
+        """Valida que name é obrigatório e não está vazio"""
+        if not value or not value.strip():
+            raise serializers.ValidationError("Nome da busca é obrigatório.")
+        return value.strip()
     
     def validate_title_keywords(self, value):
         """Valida que title_keywords é obrigatório e não está vazio"""
@@ -79,6 +85,7 @@ class SearchSerializer(serializers.ModelSerializer):
         config = validated_data['config']
         
         config_snapshot = {
+            'name': config.name,
             'title_keywords': config.title_keywords,
             'date_start': config.date_start.isoformat() if config.date_start else None,
             'description_required_keywords': config.description_required_keywords or '',

@@ -17,6 +17,7 @@ class ConfigViewSetTestCase(TestCase):
         """Setup para testes"""
         self.client = APIClient()
         self.config_data = {
+            'name': 'Busca Python',
             'title_keywords': 'python, django',
             'description_required_keywords': 'react',
             'workplace_types': ['remote'],
@@ -65,6 +66,7 @@ class SearchViewSetTestCase(TestCase):
         """Setup para testes"""
         self.client = APIClient()
         self.config = Config.objects.create(
+            name='Busca Python',
             title_keywords='python',
             description_required_keywords='django',
             workplace_types=['remote'],
@@ -97,6 +99,7 @@ class VacancyViewSetTestCase(TestCase):
         """Setup para testes"""
         self.client = APIClient()
         self.config = Config.objects.create(
+            name='Busca Python',
             title_keywords='python',
             description_required_keywords='django',
             workplace_types=['remote'],

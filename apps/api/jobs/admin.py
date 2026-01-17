@@ -4,9 +4,9 @@ from .models import Config, Search, Vacancy, SearchVacancy
 
 @admin.register(Config)
 class ConfigAdmin(admin.ModelAdmin):
-    list_display = ['id', 'title_keywords', 'date_start', 'created_at']
+    list_display = ['id', 'name', 'title_keywords', 'date_start', 'created_at']
     list_filter = ['created_at']
-    search_fields = ['title_keywords', 'description_required_keywords']
+    search_fields = ['name', 'title_keywords', 'description_required_keywords']
 
 
 @admin.register(Search)

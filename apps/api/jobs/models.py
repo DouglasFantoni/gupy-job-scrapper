@@ -3,6 +3,10 @@ from django.db import models
 
 class Config(models.Model):
     """Configuração de busca de vagas"""
+    name = models.CharField(
+        max_length=200,
+        help_text="Nome da busca de vagas"
+    )
     title_keywords = models.TextField(
         help_text="Palavras-chave para buscar no título, separadas por vírgula"
     )
@@ -49,6 +53,8 @@ class Config(models.Model):
         verbose_name_plural = 'Configurações'
 
     def __str__(self):
+        if hasattr(self, 'name') and self.name:
+            return f"Config {self.id} - {self.name}"
         return f"Config {self.id} - {self.title_keywords[:50]}"
 
 

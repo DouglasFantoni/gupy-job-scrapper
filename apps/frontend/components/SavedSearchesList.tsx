@@ -101,9 +101,14 @@ export default function SavedSearchesList({ onUseSearch, currentConfigId, onConf
             <div className="flex justify-between items-start">
               <div className="flex-1">
                 <div className="font-medium text-gray-900 mb-2">
-                  {config.title_keywords || 'Sem palavras-chave'}
+                  {config.name || config.title_keywords || 'Sem nome'}
                 </div>
                 <div className="text-sm text-gray-600 space-y-1">
+                  {config.name && config.title_keywords && (
+                    <div>
+                      <span className="font-medium">Palavras-chave:</span> {config.title_keywords}
+                    </div>
+                  )}
                   {config.date_start && (
                     <div>
                       <span className="font-medium">Data mínima:</span> {formatDate(config.date_start)}

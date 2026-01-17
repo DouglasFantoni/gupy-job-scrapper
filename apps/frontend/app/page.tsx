@@ -8,7 +8,7 @@ import { useSearchStatus } from '@/hooks/useSearchStatus';
 import { useVacancies } from '@/hooks/useVacancies';
 import { getLatestSearchByConfig, startSearch } from '@/lib/api';
 import { Config, Vacancy } from '@/lib/types';
-import { ensureArray, parseKeywords } from '@/lib/utils';
+import { parseKeywords } from '@/lib/utils';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import toast from 'react-hot-toast';
 

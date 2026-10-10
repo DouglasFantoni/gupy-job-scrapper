@@ -13,7 +13,6 @@ HEADERS = {
     'accept-encoding': 'gzip, deflate, br, zstd',
     'accept-language': 'en-US,en;q=0.9,pt-BR;q=0.8,pt;q=0.7,es;q=0.6',
     'connection': 'keep-alive',
-    'host': 'employability-portal.gupy.io',
     'origin': 'https://portal.gupy.io',
     'referer': 'https://portal.gupy.io/',
     'sec-ch-ua': '"Chromium";v="142", "Google Chrome";v="142", "Not_A Brand";v="99"',
@@ -21,11 +20,11 @@ HEADERS = {
     'sec-ch-ua-platform': '"Windows"',
     'sec-fetch-dest': 'empty',
     'sec-fetch-mode': 'cors',
-    'sec-fetch-site': 'same-site',
+    'sec-fetch-site': 'same-origin',
     'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36'
 }
 
-API_BASE_URL = "https://employability-portal.gupy.io/api/v1/jobs"
+API_BASE_URL = "https://portal.gupy.io/api/job-search/jobs"
 
 
 def build_api_url(
@@ -49,7 +48,7 @@ def build_api_url(
     
     if workplace_types and len(workplace_types) > 0:
         workplace_types_str = ','.join(workplace_types)
-        params.append(f"workplaceTypes={workplace_types_str}")
+        params.append(f"workplaceType={workplace_types_str}")
     
     if state and state.strip():
         state_encoded = quote(state.strip())
@@ -61,7 +60,7 @@ def build_api_url(
     
     if job_types and len(job_types) > 0:
         job_types_str = ','.join(job_types)
-        params.append(f"jobTypes={job_types_str}")
+        params.append(f"type={job_types_str}")
     
     url = f"{API_BASE_URL}?{'&'.join(params)}"
     return url

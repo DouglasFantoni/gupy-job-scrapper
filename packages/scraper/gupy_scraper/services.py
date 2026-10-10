@@ -59,13 +59,20 @@ class JobScraperService:
         if self.description_required_keywords and not find_word_keys(self.description_required_keywords, description):
             return False, "sem_palavras_chave", None
         
-        job_workplace_types = job.get('workplaceTypes', [])
+        job_url = job.get('jobUrl', '')
+        if 'inactive' in job_url.lower():
+            return False, "vaga_inativa", None
         
-        if not isinstance(job_workplace_types, list):
-            job_workplace_types = []
+        workplace_type = job.get('workplaceType')
+        job_workplace_types = [workplace_type] if workplace_type else []
         
-        if not job_workplace_types and job.get('isRemoteWork'):
-            job_workplace_types = ['remote']
+        # fallback for old format just in case
+        if not job_workplace_types:
+            old_workplace_types = job.get('workplaceTypes', [])
+            if isinstance(old_workplace_types, list) and old_workplace_types:
+                job_workplace_types = old_workplace_types
+            elif job.get('isRemoteWork'):
+                job_workplace_types = ['remote']
         
         if self.workplace_types and len(self.workplace_types) > 0:
             if not any(wt in self.workplace_types for wt in job_workplace_types):
@@ -98,6 +105,7 @@ class JobScraperService:
             "sem_palavras_chave": 0,
             "contem_termos_exclusao": 0,
             "workplace_type_nao_permitido": 0,
+            "vaga_inativa": 0,
             "salva": 0
         }
         

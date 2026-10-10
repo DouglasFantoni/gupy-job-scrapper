@@ -33,6 +33,11 @@
     "@testing-library/jest-dom": "^6.1.5",
     "jest-environment-jsdom": "^29.7.0",
     "@types/jest": "^29.5.11"
+  },
+  "pnpm": {
+    "approvedBuilds": [
+      "sharp",
+      "unrs-resolver"
+    ]
   }
 }
-

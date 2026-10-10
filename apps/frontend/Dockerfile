@@ -3,7 +3,8 @@
 FROM node:20-slim
 
 # Instalar pnpm globalmente
-RUN corepack enable && corepack prepare pnpm@latest --activate
+ENV COREPACK_ENABLE_DOWNLOAD_PROMPT=0
+RUN corepack enable && corepack prepare pnpm@9 --activate
 
 WORKDIR /app
 

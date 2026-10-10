@@ -59,6 +59,10 @@ class JobScraperService:
         if self.description_required_keywords and not find_word_keys(self.description_required_keywords, description):
             return False, "sem_palavras_chave", None
         
+        job_url = job.get('jobUrl', '')
+        if 'inactive' in job_url.lower():
+            return False, "vaga_inativa", None
+        
         workplace_type = job.get('workplaceType')
         job_workplace_types = [workplace_type] if workplace_type else []
         
@@ -101,6 +105,7 @@ class JobScraperService:
             "sem_palavras_chave": 0,
             "contem_termos_exclusao": 0,
             "workplace_type_nao_permitido": 0,
+            "vaga_inativa": 0,
             "salva": 0
         }
         
